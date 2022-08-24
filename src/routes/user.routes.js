@@ -5,6 +5,8 @@ const controller = require("../controllers/user.controller");
 const termController = require("../controllers/term.controller")
 const pageController = require("../controllers/page.controller")
 const postController = require("../controllers/post.controller")
+const sitemapController = require("../controllers/sitemap.controller")
+const createsitemap = require("../controllers/createSitemap")
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -68,11 +70,11 @@ module.exports = function (app) {
   // Post request
   app.get("/api/post/all", postController.getAllPost);
 
-  app.get("/api/post/:id", postController.getAllPost);
+  app.get("/api/post/:id", postController.getPostById);
 
   app.get("/api/post/search/all", postController.searchPost);
 
-  app.get("/api/post", postController.findPostPagination);
+  app.get("/api/post/pagination/all", postController.findPostPagination);
 
   app.post("/api/create/post", upload.single('PostThumb'), postController.createPost);
 
@@ -80,6 +82,12 @@ module.exports = function (app) {
 
   app.delete("/api/delete/:id", postController.deletePost);
 
+  // sitemap request 
+  app.get("/api/sitemap/term", sitemapController.getSitemapTerm);
+
+  app.get("/api/sitemap/post", sitemapController.getSitemapPost);
+
+  app.get("/api/sitemap/createxml", createsitemap.getSitemapTermLists);
 
   app.get(
     "/api/test/user",

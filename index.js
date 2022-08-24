@@ -35,21 +35,9 @@ app.use((req, res, next) => {
     next();
 });
 
-
-// define root route
-app.get('/', (req, res)=>{
-    res.send('Hello World');
-});
-// import employee routes
-const employeeRoutes = require('./src/routes/post.route');
-
 // create blog routes
-app.use('/api/v1/post', employeeRoutes);
-
-
 require('./src/routes/auth.routes')(app);
 require('./src/routes/user.routes')(app);
-
 
 app.use((req, res, next) => {
     res.status(404).json({

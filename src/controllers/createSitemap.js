@@ -8,8 +8,8 @@ const hostname = 'http://localhost:3000'
 
 
 exports.getSitemapTermLists = (req, res) => {
-    const reqOne = axios.get('http://localhost:5000/api/v1/post/sitemap');
-    const reqTwo = axios.get('http://localhost:5000/api/v1/post/sitemapterm');
+    const reqOne = axios.get('http://localhost:5000/api/sitemap/post');
+    const reqTwo = axios.get('http://localhost:5000/api/sitemap/term');
 
     axios.all([reqOne, reqTwo]).then(axios.spread((...responses) => {
         const responseOne = responses[0].data

@@ -45,6 +45,10 @@ db.user.belongsToMany(db.role, {
   otherKey: "roleId"
 });
 
+db.post.hasOne(db.post_term, {
+  foreignKey: 'PostId', targetKey: 'CatId'
+});
+
 db.refreshToken.belongsTo(db.user, {
   foreignKey: 'userId', targetKey: 'id'
 });
