@@ -32,6 +32,7 @@ db.term = require("./term.model.js")(sequelize, Sequelize);
 db.pages = require("./page.model.js")(sequelize, Sequelize);
 db.post = require("./post.model.js")(sequelize, Sequelize);
 db.post_term = require("./postTerm.model.js")(sequelize, Sequelize);
+db.setting = require("./setting.model.js")(sequelize, Sequelize);
 
 db.role.belongsToMany(db.user, {
   through: "user_roles",

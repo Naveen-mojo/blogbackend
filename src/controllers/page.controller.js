@@ -14,7 +14,17 @@ exports.getAllPages = (req, res) => {
 exports.getPageById = (req, res) => {
   id = req.params.id
   Pages.findByPk(id).then(data => {
-    res.status(200).send({ status: 200, success: true, data: data })
+    res.status(200).send({ status: 200, success: true, data: [data] })
+  }).catch(err => {
+    res.status(500).send({ message: 'Error while retrieving page' + err })
+  })
+}
+
+// Get Page By Slug
+exports.getPageBySlug = (req, res) => {
+  slug = req.params.slug
+  Pages.findOne({ where: { PageSlug: slug } }).then(data => {
+    res.status(200).send({ status: 200, success: true, data: [data] })
   }).catch(err => {
     res.status(500).send({ message: 'Error while retrieving page' + err })
   })
@@ -22,10 +32,10 @@ exports.getPageById = (req, res) => {
 
 // Create Page
 exports.createPage = (req, res) => {
-  if (!req.body.PageTitle || !req.body.PageSlug) {
+  if (!req.body.PageTitle) {
     res.status(400).send({
       message: "please fill all required fields"
-    })
+    });
     return;
   }
 
@@ -38,7 +48,7 @@ exports.createPage = (req, res) => {
   }
 
   Pages.create(page).then(data => {
-    res.status(201).send({ status: 200, success: true, data: data })
+    res.status(201).send({ status: 201, success: true, data: data })
   }).catch(err => {
     res.status(500).send({ message: 'Error while retrieving page' + err })
   })
@@ -86,7 +96,7 @@ exports.deletePage = (req, res) => {
 
   Pages.destroy({ where: { ID: id } }).then(num => {
     if (num == 1) {
-      res.send("Page was deleted successfully!")
+      res.send({ message: "Page was deleted successfully!" })
     } else {
       res.send({
         message: `Cannot delete Page with id=${id}. Maybe Page was not found!`
@@ -105,13 +115,7 @@ exports.searchPage = (req, res) => {
   const q = req.query.q;
   Pages.findAll({ where: { PageTitle: { [Op.like]: `%${q}%` }, PageStatus: "1" } })
     .then(data => {
-      console.log(data)
-      if (data.length > 0) {
-        res.send(data);
-      } else {
-        res.send({ message: "Data not found" });
-      }
-
+      res.send(data);
     })
     .catch(err => {
       res.status(500).send({

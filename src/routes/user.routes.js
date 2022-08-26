@@ -7,6 +7,7 @@ const pageController = require("../controllers/page.controller")
 const postController = require("../controllers/post.controller")
 const sitemapController = require("../controllers/sitemap.controller")
 const createsitemap = require("../controllers/createSitemap")
+const settingController = require("../controllers/setting.controller")
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -44,7 +45,7 @@ module.exports = function (app) {
 
   app.get("/api/term/search/all", termController.searchTerm);
 
-  app.get("/api/term/category", termController.termData);
+  app.get("/api/category", termController.termData);
 
   app.post("/api/create/term", upload.single('TermImage'), termController.createTerm);
 
@@ -57,6 +58,8 @@ module.exports = function (app) {
   app.get("/api/page/all", pageController.getAllPages);
 
   app.get("/api/page/:id", pageController.getPageById);
+
+  app.get("/api/page/slug/:slug", pageController.getPageBySlug);
 
   app.get("/api/page/search/all", pageController.searchPage);
 
@@ -76,11 +79,16 @@ module.exports = function (app) {
 
   app.get("/api/post/pagination/all", postController.findPostPagination);
 
+  app.get("/api/post/pagination/carousel", postController.findPostcarouselPagination);
+
+  app.get("/:id/:slug", postController.getPostBySlug);
+
   app.post("/api/create/post", upload.single('PostThumb'), postController.createPost);
 
-  app.put("/api/update/post", upload.single('PostThumb'), postController.updatePost);
+  app.put("/api/update/post/:id", upload.single('PostThumb'), postController.updatePost);
 
   app.delete("/api/delete/:id", postController.deletePost);
+
 
   // sitemap request 
   app.get("/api/sitemap/term", sitemapController.getSitemapTerm);
@@ -88,6 +96,11 @@ module.exports = function (app) {
   app.get("/api/sitemap/post", sitemapController.getSitemapPost);
 
   app.get("/api/sitemap/createxml", createsitemap.getSitemapTermLists);
+
+
+  // Setting request
+  app.get("/api/setting/all", settingController.getAllSetting);
+
 
   app.get(
     "/api/test/user",

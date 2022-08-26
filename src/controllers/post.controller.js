@@ -1,32 +1,55 @@
-const { post_term } = require('../models')
-const db = require('../models')
-const { post: Post } = db
+const { post_term } = require("../models");
+const db = require("../models");
+const { post: Post, post_term: PostTerm } = db;
 
 // Get All Post
 exports.getAllPost = (req, res) => {
-  Post.findAll({ where: { PostStatus: 1 }, include: [{ model: post_term, required: true }] }).then(data => {
-    res.status(200).send({ status: 200, success: true, data: data })
-  }).catch(err => {
-    res.status(500).send({ message: 'Error while retrieving post' + err })
+  Post.findAll({
+    where: { PostStatus: 1 },
+    include: [{ model: post_term, required: true }],
   })
-}
+    .then((data) => {
+      res.status(200).send({ status: 200, success: true, data: data });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: "Error while retrieving post" + err });
+    });
+};
 
 // Get Post By Id
 exports.getPostById = (req, res) => {
-  id = req.params.id
-  Post.findByPk(id).then(data => {
-    res.status(200).send({ status: 200, success: true, data: data });
-  }).catch(err => {
-    res.status(500).send({ message: 'Error while retrieving post' + err });
-  })
-}
+  id = req.params.id;
+  Post.findByPk(id)
+    .then((data) => {
+      res.status(200).send({ status: 200, success: true, data: data });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: "Error while retrieving post" + err });
+    });
+};
+
+// get post by ID
+exports.getPostBySlug = (req, res) => {
+  slug = req.path.replace("/", "")
+  Post.findOne({ where: { PostSlug: slug }, include: [{ model: post_term, required: true }] })
+    .then((data) => {
+      res.status(200).send({ status: 200, success: true, data: [data] });
+    })
+    .catch((err) => {
+      res.status(500).send({ message: "Error while retrieving post" + err });
+    });
+};
 
 // Create Post
 exports.createPost = (req, res) => {
-  if (!req.body.PostTitle || !req.body.PostSlug || !req.body.PostContent || !req.body.PostThumb) {
+  if (
+    !req.body.PostTitle ||
+    !req.body.PostSlug ||
+    !req.body.PostContent
+  ) {
     res.status(400).send({
-      message: "please fill all required fields"
-    })
+      message: "please fill all required fields",
+    });
     return;
   }
 
@@ -48,25 +71,39 @@ exports.createPost = (req, res) => {
   };
 
   Post.create(post)
-    .then(data => {
+    .then((data) => {
+
+      const post_term = {
+        PostId: data.ID,
+        CatId: req.body.CatId,
+        SubCatId: req.body.SubCatId,
+      }
+
+      PostTerm.create(post_term)
+        .then((data) => { res.send({ status: 201, success: true, message: data }); })
+
       res.send({ status: 201, success: true, message: data });
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the post."
+        message: err.message || "Some error occurred while creating the post.",
       });
     });
-}
+
+};
 
 // Update Post
 exports.updatePost = (req, res) => {
-  id = req.params.id
+  id = req.params.id;
 
-  if (!req.body.PostTitle || !req.body.PostSlug || !req.body.PostContent || !req.body.PostThumb) {
+  if (
+    !req.body.PostTitle ||
+    !req.body.PostSlug ||
+    !req.body.PostContent
+  ) {
     res.status(400).send({
-      message: "please fill all required fields"
-    })
+      message: "please fill all required fields",
+    });
     return;
   }
 
@@ -76,7 +113,9 @@ exports.updatePost = (req, res) => {
     PostContent: req.body.PostContent,
     PostSlug: req.body.PostSlug,
     PostViews: req.body.PostViews,
-    PostThumb: req.file ? `http://localhost:5000/upload/${req.file.filename}` : req.body.PostThumb,
+    PostThumb: req.file
+      ? `http://localhost:5000/upload/${req.file.filename}`
+      : req.body.PostThumb,
     PostThumbUrl: req.body.PostThumbUrl,
     PostStatus: req.body.PostStatus,
     MetaTitle: req.body.MetaTitle,
@@ -87,51 +126,89 @@ exports.updatePost = (req, res) => {
     Affiliate: req.body.Affiliate,
   };
 
-  Post.update(post, {
-    where: { ID: id }
-  }).then(num => {
-    if (num == 1) {
-      res.send({ message: "Post Updated successfully" })
-    } else {
-      res.send({
-        message: `Cannot update Post with id=${id}. Maybe Post was not found or req.body is empty!`
-      });
-    }
-  }).catch(err => {
-    res.status(500).send({
-      message: "Error updating Post with id=" + id
-    });
-  });
-}
+  const post_term = {
+    PostId: req.body.PostId,
+    CatId: req.body.CatId,
+    SubCatId: req.body.SubCatId,
+  }
 
-// Delete Post 
-exports.deletePost = (req, res) => {
-  const id = req.params.id;
-
-  Post.destroy({
-    where: { ID: id }
-  })
-    .then(num => {
+  PostTerm.update(post_term, { where: { PostId: id } })
+    .then((num) => {
       if (num == 1) {
-        res.send({
-          message: "Post was deleted successfully!"
-        });
+        res.send({ message: "Post Term Updated successfully" });
       } else {
         res.send({
-          message: `Cannot delete Post with id=${id}. Maybe Post was not found!`
+          message: `Cannot update Post Term with id=${id}. Maybe Post Term was not found or req.body is empty!`,
+        });
+      }
+    });
+
+  Post.update(post, {
+    where: { ID: id },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.send({ message: "Post Updated successfully" });
+      } else {
+        res.send({
+          message: `Cannot update Post with id=${id}. Maybe Post was not found or req.body is empty!`,
         });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message: "Could not delete Post with id=" + id
+        message: "Error updating Post with id=" + id,
       });
     });
 };
 
-// Get Post By Pagination 
-exports.findPostPagination = (req, res) => {
+// Delete Post
+exports.deletePost = (req, res) => {
+  const id = req.params.id;
 
+  Post.destroy({
+    where: { ID: id },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.send({
+          message: "Post was deleted successfully!",
+        });
+      } else {
+        res.send({
+          message: `Cannot delete Post with id=${id}. Maybe Post was not found!`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Could not delete Post with id=" + id,
+      });
+    });
+
+    PostTerm.destroy({
+      where: { PostId: id },
+    })
+      .then((num) => {
+        if (num == 1) {
+          res.send({
+            message: "Post Term was deleted successfully!",
+          });
+        } else {
+          res.send({
+            message: `Cannot delete Post Term with id=${id}. Maybe Post was not found!`,
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: "Could not delete Post Term with id=" + id,
+        });
+      });
+};
+
+// Get Post By Pagination
+exports.findPostPagination = (req, res) => {
   const getPagination = (page, size) => {
     const limit = size ? +size : 3;
     const offset = page ? page * limit : 0;
@@ -139,44 +216,78 @@ exports.findPostPagination = (req, res) => {
   };
 
   const getPagingData = (data, page, limit) => {
-    const { count: totalItems, rows: post } = data;
+    const { count: total, rows: results } = data;
     const currentPage = page ? +page : 0;
-    const totalPages = Math.ceil(totalItems / limit);
-    return { totalItems, post, totalPages, currentPage };
+    const total_pages = Math.ceil(total / limit);
+    return { results, pagination: { total, total_pages, currentPage } };
   };
 
   const { page, size } = req.query;
   const { limit, offset } = getPagination(page, size);
-  Post.findAndCountAll({ where: { PostStatus: 1 }, limit, offset })
-    .then(data => {
+  Post.findAndCountAll({ where: { PostStatus: 1 }, include: [{ model: post_term, required: true }], limit, offset })
+    .then((data) => {
       const response = getPagingData(data, page, limit);
       res.send(response);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving post."
+        message: err.message || "Some error occurred while retrieving post.",
       });
     });
 };
 
-// Search In Term 
+exports.findPostcarouselPagination = (req, res) => {
+  const getPagination = (page, size) => {
+    const limit = size ? +size : 3;
+    const offset = page ? page * limit : 0;
+    return { limit, offset };
+  };
+
+  const getPagingData = (data, page, limit) => {
+    const { count: total, rows: results } = data;
+    const currentPage = page ? +page : 0;
+    const total_pages = Math.ceil(total / limit);
+    return { results, pagination: { total, total_pages, currentPage } };
+  };
+
+  const { page, size } = req.query;
+  const { limit, offset } = getPagination(page, size);
+  Post.findAndCountAll({
+    attributes: [
+      "ID",
+      "PostThumbUrl",
+      "PostTitle",
+      "createdAt",
+      "PostSlug",
+      "PostContent",
+    ],
+    where: { PostStatus: 1 },
+    include: [{ model: post_term, required: true }],
+    limit,
+    offset,
+  })
+    .then((data) => {
+      const response = getPagingData(data, page, limit);
+      res.send(response);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving post.",
+      });
+    });
+};
+
+// Search In Term
 exports.searchPost = (req, res) => {
   const Op = db.Sequelize.Op;
   const q = req.query.q;
-  Post.findAll({ where: { PostTitle: { [Op.like]: `%${q}%` }, PostStatus: 1 } })
-    .then(data => {
-      if (data.length > 0) {
+  Post.findAll({ where: { PostTitle: { [Op.like]: `%${q}%` }, PostStatus: 1 }, include: [{ model: post_term, required: true }], })
+    .then((data) => {
         res.send(data);
-      } else {
-        res.send({ message: "Data not found" });
-      }
-
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving post."
+        message: err.message || "Some error occurred while retrieving post.",
       });
     });
 };

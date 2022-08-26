@@ -2,18 +2,18 @@ module.exports = (sequelize, Sequelize) => {
   const Page = sequelize.define("pages", {
     ID: {
       type: Sequelize.INTEGER,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     PageTitle: {
       type: Sequelize.STRING,
       required: true
     },
     PageSlug: {
-      type: Sequelize.STRING,
-      required: true
+      type: Sequelize.STRING
     },
     PageContent: {
-      type: Sequelize.STRING
+      type: Sequelize.TEXT('long'),
     },
     PageStatus: {
       type: Sequelize.INTEGER
@@ -22,6 +22,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.DATE
     }
   }, { timestamps: false })
+
   return Page;
 }
 

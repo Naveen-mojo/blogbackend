@@ -36,11 +36,12 @@ exports.getAllTerm = (req, res) => {
 exports.getTermById = (req, res) => {
   id = req.params.id
   Term.findByPk(id).then(data => {
-    res.status(200).send({ status: 200, success: true, data: data });
+    res.status(200).send({ status: 200, success: true, data: [data] });
   }).catch(err => {
     res.status(500).send({ message: 'Error while retrieving term' + err });
   })
 };
+
 
 // Create Term 
 exports.createTerm = (req, res) => {
@@ -167,12 +168,7 @@ exports.searchTerm = (req, res) => {
   const q = req.query.q;
   Term.findAll({ where: { TermName: { [Op.like]: `%${q}%` }, TermStatus: 1 } })
     .then(data => {
-      if (data.length > 0) {
         res.send(data);
-      } else {
-        res.send({ message: "Data not found" });
-      }
-
     })
     .catch(err => {
       res.status(500).send({
