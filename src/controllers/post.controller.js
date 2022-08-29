@@ -186,25 +186,25 @@ exports.deletePost = (req, res) => {
       });
     });
 
-    PostTerm.destroy({
-      where: { PostId: id },
-    })
-      .then((num) => {
-        if (num == 1) {
-          res.send({
-            message: "Post Term was deleted successfully!",
-          });
-        } else {
-          res.send({
-            message: `Cannot delete Post Term with id=${id}. Maybe Post was not found!`,
-          });
-        }
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message: "Could not delete Post Term with id=" + id,
+  PostTerm.destroy({
+    where: { PostId: id },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.send({
+          message: "Post Term was deleted successfully!",
         });
+      } else {
+        res.send({
+          message: `Cannot delete Post Term with id=${id}. Maybe Post was not found!`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Could not delete Post Term with id=" + id,
       });
+    });
 };
 
 // Get Post By Pagination
@@ -227,7 +227,11 @@ exports.findPostPagination = (req, res) => {
   Post.findAndCountAll({ where: { PostStatus: 1 }, include: [{ model: post_term, required: true }], limit, offset })
     .then((data) => {
       const response = getPagingData(data, page, limit);
-      res.send(response);
+      if (response.pagination.currentPage < response.pagination.total_pages) {
+        res.send(response);
+      } else {
+        res.send({ "results": response.results, "pagination": response.pagination = { err: `queried page ${response.pagination.currentPage} is >= to maximum page number ${response.pagination.total_pages}` } });
+      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -283,7 +287,7 @@ exports.searchPost = (req, res) => {
   const q = req.query.q;
   Post.findAll({ where: { PostTitle: { [Op.like]: `%${q}%` }, PostStatus: 1 }, include: [{ model: post_term, required: true }], })
     .then((data) => {
-        res.send(data);
+      res.send(data);
     })
     .catch((err) => {
       res.status(500).send({

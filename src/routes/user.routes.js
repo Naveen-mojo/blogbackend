@@ -8,6 +8,7 @@ const postController = require("../controllers/post.controller")
 const sitemapController = require("../controllers/sitemap.controller")
 const createsitemap = require("../controllers/createSitemap")
 const settingController = require("../controllers/setting.controller")
+const dashboardController = require("../controllers/dashboard.controller")
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -100,6 +101,13 @@ module.exports = function (app) {
 
   // Setting request
   app.get("/api/setting/all", settingController.getAllSetting);
+
+  // Dashboard request
+  app.get("/api/dashboard/post", dashboardController.getTotalPost);
+
+  app.get("/api/dashboard/post/active", dashboardController.getActivePost);
+
+  app.get("/api/dashboard/terms", dashboardController.getTerms);
 
 
   app.get(
