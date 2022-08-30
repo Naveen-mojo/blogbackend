@@ -24,6 +24,8 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+// db.sequelize.sync();
+
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
 db.refreshToken = require("../models/refreshToken.model.js")(sequelize, Sequelize);
@@ -47,7 +49,9 @@ db.user.belongsToMany(db.role, {
 });
 
 db.post.hasOne(db.post_term, {
-  foreignKey: 'PostId', targetKey: 'CatId'
+  foreignKey: 'PostId', 
+  targetKey: 'CatId',
+  onUpdate: 'CASCADE'
 });
 
 db.refreshToken.belongsTo(db.user, {

@@ -19,7 +19,7 @@ exports.getAllPost = (req, res) => {
 // Get Post By Id
 exports.getPostById = (req, res) => {
   id = req.params.id;
-  Post.findByPk(id)
+  Post.findOne({ where: { ID: id }, include: [{ model: post_term, required: true }] })
     .then((data) => {
       res.status(200).send({ status: 200, success: true, data: data });
     })
@@ -80,9 +80,8 @@ exports.createPost = (req, res) => {
       }
 
       PostTerm.create(post_term)
-        .then((data) => { res.send({ status: 201, success: true, message: data }); })
 
-      res.send({ status: 201, success: true, message: data });
+      res.status(201).send({ status: 201, success: true, message: data });
     })
     .catch((err) => {
       res.status(500).send({
@@ -133,24 +132,15 @@ exports.updatePost = (req, res) => {
   }
 
   PostTerm.update(post_term, { where: { PostId: id } })
-    .then((num) => {
-      if (num == 1) {
-        res.send({ message: "Post Term Updated successfully" });
-      } else {
-        res.send({
-          message: `Cannot update Post Term with id=${id}. Maybe Post Term was not found or req.body is empty!`,
-        });
-      }
-    });
 
   Post.update(post, {
     where: { ID: id },
   })
     .then((num) => {
       if (num == 1) {
-        res.send({ message: "Post Updated successfully" });
+        res.status(200).send({ message: "Post Updated successfully" });
       } else {
-        res.send({
+        res.status(400).send({
           message: `Cannot update Post with id=${id}. Maybe Post was not found or req.body is empty!`,
         });
       }
@@ -169,22 +159,6 @@ exports.deletePost = (req, res) => {
   Post.destroy({
     where: { ID: id },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Post was deleted successfully!",
-        });
-      } else {
-        res.send({
-          message: `Cannot delete Post with id=${id}. Maybe Post was not found!`,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Could not delete Post with id=" + id,
-      });
-    });
 
   PostTerm.destroy({
     where: { PostId: id },

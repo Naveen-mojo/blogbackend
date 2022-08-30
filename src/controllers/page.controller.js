@@ -23,7 +23,7 @@ exports.getPageById = (req, res) => {
 // Get Page By Slug
 exports.getPageBySlug = (req, res) => {
   slug = req.params.slug
-  Pages.findOne({ where: { PageSlug: slug } }).then(data => {
+  Pages.findOne({ where: { PageSlug: slug, PageStatus:1 } }).then(data => {
     res.status(200).send({ status: 200, success: true, data: [data] })
   }).catch(err => {
     res.status(500).send({ message: 'Error while retrieving page' + err })
