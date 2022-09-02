@@ -19,6 +19,13 @@ const corsOptions = {
 // setup the server port
 const port = process.env.PORT || 5000;
 
+// db.sequelize.sync();
+// force: true will drop the table if it already exists
+// db.sequelize.sync({force: true}).then(() => {
+//   console.log('Drop and Resync Database with { force: true }');
+//   initial();
+// });
+
 // parse request data content type application/x-www-form-rulencoded
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -49,3 +56,21 @@ app.use((req, res, next) => {
 app.listen(port, ()=>{
     console.log(`Express is running at port http://localhost:${port}`);
 });
+
+function initial() {
+    Role.create({
+      id: 1,
+      name: "user"
+    });
+   
+    Role.create({
+      id: 2,
+      name: "moderator"
+    });
+   
+    Role.create({
+      id: 3,
+      name: "admin"
+    });
+  }
+//   initial()
