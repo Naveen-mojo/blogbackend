@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const Page = sequelize.define("pages", {
+  const Page = sequelize.define("binge_page_msts", {
     ID: {
       type: Sequelize.INTEGER,
       primaryKey: true,

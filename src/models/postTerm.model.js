@@ -1,8 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
-  const PostTerm = sequelize.define('post_terms', {
-    ID: {
+  const PostTerm = sequelize.define('binge_post_terms', {
+    PostTermID: {
       type: Sequelize.INTEGER,
-      primaryKay: true
     },
     PostId: {
       type: Sequelize.INTEGER,

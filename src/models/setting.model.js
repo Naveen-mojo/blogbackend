@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Setting = sequelize.define('settings', {
+    const Setting = sequelize.define('binge_settings', {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true
@@ -7,7 +7,7 @@ module.exports = (sequelize, Sequelize) => {
         siteTitle: {
             type: Sequelize.STRING
         },
-        fotterAbout: {
+        footerAbout: {
             type: Sequelize.STRING
         },
         siteLogo: {
@@ -31,7 +31,7 @@ module.exports = (sequelize, Sequelize) => {
         metaVerification: {
             type: Sequelize.STRING
         },
-        fotterVerification: {
+        footerVerification: {
             type: Sequelize.STRING
         },
         inPageAds: {
@@ -40,7 +40,7 @@ module.exports = (sequelize, Sequelize) => {
         headerAds: {
             type: Sequelize.STRING
         },
-        fotterAds: {
+        footerAds: {
             type: Sequelize.STRING
         },
         articleAds: {
@@ -55,18 +55,12 @@ module.exports = (sequelize, Sequelize) => {
         headMargin: {
             type: Sequelize.STRING
         },
-        fotterMargin: {
+        footerMargin: {
             type: Sequelize.STRING
         },
         actionUrl: {
             type: Sequelize.STRING
-        },
-        secondary_logo: {
-            type: Sequelize.STRING
-        },
-        created_at: {
-            type: Sequelize.DATE
-        },
+        }
     }, { timestamps: false })
 
     return Setting;

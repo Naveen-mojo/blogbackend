@@ -78,7 +78,15 @@ module.exports = function (app) {
 
   app.get("/api/post/search/all", postController.searchPost);
 
+
+
+
+
   app.get("/api/post/pagination/all", postController.findPostPagination);
+
+
+
+  
 
   app.get("/api/post/pagination/carousel", postController.findPostcarouselPagination);
 

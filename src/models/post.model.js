@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const Post = sequelize.define('posts', {
+  const Post = sequelize.define('binge_posts_msts', {
     ID: {
       type: Sequelize.INTEGER,
       primaryKey: true,
@@ -47,7 +47,7 @@ module.exports = (sequelize, Sequelize) => {
     Affiliate: {
       type: Sequelize.INTEGER
     }
-  }, { timestamps: true })
+  }, { timestamps: false })
 
   return Post;
 }

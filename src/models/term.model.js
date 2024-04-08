@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Term = sequelize.define("term", {
+    const Term = sequelize.define("binge_term_msts", {
         TermId: {
             type: Sequelize.INTEGER,
             primaryKey: true
